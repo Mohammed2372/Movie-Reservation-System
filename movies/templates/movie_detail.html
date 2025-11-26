@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>{{ movie.title }}</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            background-color: #1a1a1a;
+            color: white;
+            padding: 40px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            display: flex;
+            gap: 40px;
+        }
+
+        /* Left Side: Poster */
+        .poster-large {
+            width: 300px;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.6);
+        }
+
+        /* Right Side: Info */
+        .details {
+            flex: 1;
+        }
+
+        h1 {
+            color: #f5c518;
+            margin-top: 0;
+        }
+
+        .desc {
+            line-height: 1.6;
+            color: #ddd;
+            margin-bottom: 30px;
+        }
+
+        /* Showtimes Buttons */
+        .showtime-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .showtime-btn {
+            background-color: #333;
+            color: white;
+            padding: 15px 25px;
+            text-decoration: none;
+            border-radius: 5px;
+            border: 1px solid #555;
+            transition: background 0.2s;
+            text-align: center;
+        }
+
+        .showtime-btn:hover {
+            background-color: #f5c518;
+            color: black;
+            border-color: #f5c518;
+        }
+
+        .screen-name {
+            font-size: 0.8em;
+            color: #aaa;
+            display: block;
+            margin-top: 5px;
+        }
+
+        .showtime-btn:hover .screen-name {
+            color: #333;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div>
+            {% if movie.poster %}
+            <img src="{{ movie.poster.url }}" class="poster-large">
+            {% else %}
+            <div class="poster-large"
+                style="height:450px; background:#333; display:flex; align-items:center; justify-content:center;">No
+                Image</div>
+            {% endif %}
+        </div>
+
+        <div class="details">
+            <h1>{{ movie.title }}</h1>
+            <p><strong>Genre:</strong> {{ movie.genre }} | <strong>Duration:</strong> {{ movie.duration_minutes }} mins
+            </p>
+            <p class="desc">{{ movie.description }}</p>
+
+            <h3>Select a Showtime:</h3>
+            <div class="showtime-list">
+                {% for show in showtimes %}
+                <a href="{% url 'seat-selection' show.id %}" class="showtime-btn">
+                    <strong>{{ show.start_time|date:"H:i" }}</strong>
+                    <span class="screen-name">{{ show.start_time|date:"D, d M" }}<br>{{ show.screen.name }}</span>
+                </a>
+                {% empty %}
+                <p>No upcoming shows scheduled.</p>
+                {% endfor %}
+            </div>
+
+            <br><br>
+            <a href="{% url 'movie-list' %}" style="color: #aaa;">&larr; Back to Movies</a>
+        </div>
+    </div>
+</body>
+
+</html>
