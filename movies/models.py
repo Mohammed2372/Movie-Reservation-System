@@ -51,3 +51,23 @@ class Screen(models.Model):
 
     def __str__(self):
         return f"{self.name} at {self.theater}"
+
+
+class Seat(models.Model):
+    SEAT_TYPE = [
+        ("REGULAR", "Regular Seat"),
+        ("PREMIUM", "Premium Seat"),
+        ("VIP", "VIP Seat"),
+    ]
+
+    row = models.CharField(max_length=5)
+    number = models.PositiveIntegerField()
+    screen = models.ForeignKey(Screen, on_delete=models.CASCADE, related_name="seats")
+    seat_type = models.CharField(max_length=10, choices=SEAT_TYPE, default="REGULAR")
+
+    class Meta:
+        unique_together = ("row", "number", "screen")
+        ordering = ["row", "number"]
+    
+    def __str__(self):
+        return f"Seat {self.row}{self.number} {self.seat_type} in {self.screen}"

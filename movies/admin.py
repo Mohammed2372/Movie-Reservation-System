@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Movie, Theater, Screen
+from .models import Movie, Theater, Screen, Seat
 
 
 # Register your models here.
@@ -24,3 +24,10 @@ class MovieAdmin(admin.ModelAdmin):
 @admin.register(Screen)
 class ScreenAdmin(admin.ModelAdmin):
     list_display = ("name", "theater", "capacity", "screen_type")
+
+
+@admin.register(Seat)
+class SeatAdmin(admin.ModelAdmin):
+    list_display = ("screen", "row", "number", "seat_type")
+    list_filter = ("seat_type", "screen")
+    search_fields = ("row", "screen__name")
