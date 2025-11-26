@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 
 # Create your models here.
@@ -7,7 +8,13 @@ class Movie(models.Model):
     description = models.TextField()
     genre = models.CharField(max_length=50)
     duration = models.PositiveIntegerField(help_text="Duration in minutes")
-    rating = models.ValueRange(1, 5)
+    rating = models.DecimalField(
+        max_digits=2,
+        decimal_places=1,
+        null=True,
+        blank=True,
+        validators=[MinValueValidator(1.0), MaxValueValidator(5.0)],
+    )
     poster = models.ImageField(upload_to="images/", blank=True, null=True)
     trailer_url = models.URLField(blank=True, null=True)
     release_date = models.DateField()
