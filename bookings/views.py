@@ -35,7 +35,7 @@ def BookSeats(request, showtime_id):
     if request.method == "POST":
         # get selected seat ids of show from the form
         showtime = get_object_or_404(Showtime, pk=showtime_id)
-        
+
         raw_selected_seat_ids = request.POST.get("seat_ids", "")
 
         if not raw_selected_seat_ids:
@@ -70,3 +70,17 @@ def BookSeats(request, showtime_id):
             messages.error(request, f"Booking Failed: {str(e)}")
             return redirect("seat-selection", showtime_id=showtime_id)
     return redirect("seat-selection", showtime_id=showtime_id)
+
+
+def TicketView(request):
+    # get all bookings for the user
+    bookings = (
+        Booking.objects.filter(user=request.user)
+        .select_related("showtime__movie", "showtime__screen")
+        .prefetch_related("tickets__seat")
+        .order_by("-created_at")
+    )
+
+    context = {"bookings": bookings}
+    
+    return render(request, "my_tickets.html", context)
