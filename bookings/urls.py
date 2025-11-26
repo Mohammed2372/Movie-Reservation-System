@@ -1,9 +1,13 @@
-from django.urls import path
+from django.urls import path, include
+from rest_framework.routers import DefaultRouter
 
-from .views import SeatSelectionView, BookSeats, TicketView
+
+from .views import BookingViewSet
+
+
+router = DefaultRouter()
+router.register(r"bookings", BookingViewSet, basename="booking")
 
 urlpatterns = [
-    path('showtime/<int:showtime_id>/', SeatSelectionView, name='seat-selection'),
-    path('showtime/<int:showtime_id>/book/', BookSeats, name='book-seats'),
-    path('my-tickets/', TicketView, name='my-tickets'),
+    path("", include(router.urls)),
 ]
