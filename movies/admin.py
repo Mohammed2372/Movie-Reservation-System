@@ -24,6 +24,7 @@ class MovieAdmin(admin.ModelAdmin):
 @admin.register(Screen)
 class ScreenAdmin(admin.ModelAdmin):
     list_display = ("name", "theater", "capacity", "screen_type")
+    search_fields = ("name", "theater__name")
 
 
 @admin.register(Seat)
