@@ -13,7 +13,11 @@ from .serializers import BookingSerializer, CreateBookingSerializer
 # Create your views here.
 class BookingViewSet(viewsets.ModelViewSet):
     Permission_classes = [IsAuthenticated]
-    serializer_class = BookingSerializer
+
+    def get_serializer_class(self) -> CreateBookingSerializer | BookingSerializer:
+        if self.action == "create":
+            return CreateBookingSerializer
+        return BookingSerializer
 
     def get_queryset(self):
         return Booking.objects.filter(user=self.request.user).order_by("-created_at")
