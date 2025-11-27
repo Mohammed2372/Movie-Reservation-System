@@ -155,3 +155,12 @@ SIMPLE_JWT = {
         "Bearer",
     ),  # We will send header as "Authorization: Bearer <token>"
 }
+
+
+# Add this configuration block at the bottom of settings.py
+SPECTACULAR_SETTINGS = {
+    "TITLE": "Cinema Reservation API",
+    "DESCRIPTION": "API for booking movie tickets with JWT Auth",
+    "VERSION": "1.0.0",
+    "SERVE_INCLUDE_SCHEMA": False,
+}
