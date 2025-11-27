@@ -1,8 +1,10 @@
 from django.shortcuts import get_object_or_404
+from django.db import transaction
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
-from django.db import transaction
+from rest_framework.decorators import action
+
 
 from movies.models import Seat
 from shows.models import Showtime
@@ -71,6 +73,27 @@ class BookingViewSet(viewsets.ModelViewSet):
                 return Response({"error": str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=True, methods=["post"])
+    def cancel(self, request, pk=None):
+        booking = self.get_object()
+
+        if booking.status == "Cancelled":
+            return Response(
+                {"error": "Booking is already cancelled."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        with transaction.atomic():
+            booking.status = "Cancelled"
+            booking.save()
+
+            # delete tickets so the seats become 'Available' again in the Seat Map
+            booking.seats.all().delete()
+
+        return Response(
+            {"message": "Booking cancelled successfully."}, status=status.HTTP_200_OK
+        )
 
 
 # TODO: add price for ticket based on the show, seat type, theater
