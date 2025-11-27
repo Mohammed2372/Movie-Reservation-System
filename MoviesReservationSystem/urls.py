@@ -27,6 +27,7 @@ urlpatterns = [
     path("api/", include("movies.urls")),
     path("api/", include("shows.urls")),
     path("api/", include("bookings.urls")),
+    path("api/", include("accounts.urls")),
     # Schema generation
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
     # The UI you can look at
