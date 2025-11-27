@@ -40,6 +40,12 @@ class RegisterSerializer(ModelSerializer):
         return user
 
 
+# --- Login --- #
+class LoginSerializer(serializers.Serializer):
+    username = serializers.CharField()
+    password = serializers.CharField()
+
+
 # --- User Detail --- #
 class UserDetailSerializer(ModelSerializer):
     class Meta:

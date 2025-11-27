@@ -8,9 +8,10 @@ from rest_framework import status, generics, permissions
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.exceptions import TokenError, InvalidToken
+from drf_spectacular.utils import extend_schema
 
 
-from .serializers import RegisterSerializer, UserDetailSerializer
+from .serializers import RegisterSerializer, UserDetailSerializer, LoginSerializer
 
 
 # Create your views here.
@@ -32,6 +33,11 @@ class RegisterView(generics.CreateAPIView):
 class LoginView(APIView):
     permission_classes = [permissions.AllowAny]
 
+    @extend_schema(
+        request=LoginSerializer,
+        responses={200: None},
+        description="logs in the user and sets HttpOnly cookies",
+    )
     def post(self, request):
         username = request.data.get("username")
         password = request.data.get("password")
@@ -80,6 +86,11 @@ class LogoutView(APIView):
 class CookieTokenRefreshView(APIView):
     permission_classes = [permissions.AllowAny]
 
+    @extend_schema(
+        request=None,
+        responses={200: None},
+        description="Clears the HttpOnly cookies",
+    )
     def post(self, request):
         refresh_token = request.COOKIES.get("refresh_token")
 
@@ -116,5 +127,10 @@ class UserView(generics.RetrieveAPIView):
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = UserDetailSerializer
 
+    @extend_schema(
+        request=None,
+        responses={200: None},
+        description="Refreshes the access_token using the refresh_token cookie.",
+    )
     def get_object(self):
         return self.request.user

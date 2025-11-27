@@ -1,6 +1,8 @@
 from rest_framework import viewsets, views, status
 from rest_framework.response import Response
+from rest_framework import serializers
 from django.utils import timezone
+from drf_spectacular.utils import extend_schema, inline_serializer
 
 
 from .models import Showtime
@@ -16,6 +18,18 @@ class ShowtimeViewSet(viewsets.ModelViewSet):
 
 
 class SeatMapView(views.APIView):
+    @extend_schema(
+        responses=inline_serializer(
+            name="SeatMapResponse",
+            fields={
+                "id": serializers.IntegerField(),
+                "row": serializers.CharField(),
+                "number": serializers.IntegerField(),
+                "status": serializers.CharField(),
+            },
+            many=True,
+        )
+    )
     def get(self, request, showtime_id=None):
         try:
             showtime = Showtime.objects.get(pk=showtime_id)
