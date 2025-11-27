@@ -39,6 +39,7 @@ class RegisterSerializer(ModelSerializer):
         )
         return user
 
+
 # --- User Detail --- #
 class UserDetailSerializer(ModelSerializer):
     class Meta:
