@@ -15,6 +15,9 @@ class Movie(models.Model):
         blank=True,
         validators=[MinValueValidator(1.0), MaxValueValidator(5.0)],
     )
+    base_price = models.DecimalField(
+        max_digits=6, decimal_places=2, default=10.00, help_text="Ticket price in USD"
+    )
     poster = models.ImageField(upload_to="images/", blank=True, null=True)
     trailer_url = models.URLField(blank=True, null=True)
     release_date = models.DateField()
@@ -68,6 +71,6 @@ class Seat(models.Model):
     class Meta:
         unique_together = ("row", "number", "screen")
         ordering = ["row", "number"]
-    
+
     def __str__(self):
         return f"Seat {self.row}{self.number} {self.seat_type} in {self.screen}"

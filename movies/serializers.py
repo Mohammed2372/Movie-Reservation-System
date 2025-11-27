@@ -11,6 +11,7 @@ class MovieSerializer(ModelSerializer):
             "id",
             "title",
             "description",
+            "base_price",
             "duration",
             "genre",
             "poster",

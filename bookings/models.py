@@ -28,6 +28,7 @@ class Ticket(models.Model):
         Booking, on_delete=models.CASCADE, related_name="tickets"
     )
     seat = models.ForeignKey(Seat, on_delete=models.CASCADE)
+    price = models.DecimalField(max_digits=6, decimal_places=2)
     # qr_code = models.ImageField(upload_to="qr_codes/", blank=True, null=True)
 
     class Meta:

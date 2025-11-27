@@ -4,6 +4,7 @@ from rest_framework import viewsets, status
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import action
+from decimal import Decimal
 
 
 from movies.models import Seat
@@ -12,7 +13,18 @@ from .models import Booking, Ticket
 from .serializers import BookingSerializer, CreateBookingSerializer
 
 
-# Create your views here.
+def calculate_dynamic_price(showtime, seats):
+    final_price = showtime.movie.base_price
+    if showtime.start_time.hour < 12:
+        discount = final_price * Decimal("0.20")
+        final_price -= discount
+    if seats.seat__type == "VIP":
+        final_price += Decimal("10.00")
+    if seats.seat_type == "Premium":
+        final_price += Decimal("5.00")
+    return final_price
+
+
 class BookingViewSet(viewsets.ModelViewSet):
     Permission_classes = [IsAuthenticated]
 
@@ -63,7 +75,15 @@ class BookingViewSet(viewsets.ModelViewSet):
                         ).exists():
                             raise Exception(f"Seat {row}{number} is already booked!")
 
-                        Ticket.objects.create(booking=booking, seat=seat)
+                        ticket_price = calculate_dynamic_price(
+                            seat=seat, showtime=showtime
+                        )
+
+                        Ticket.objects.create(
+                            booking=booking,
+                            seat=seat,
+                            price=ticket_price,
+                        )
 
                 return Response(
                     BookingSerializer(booking).data, status=status.HTTP_201_CREATED
@@ -94,6 +114,3 @@ class BookingViewSet(viewsets.ModelViewSet):
         return Response(
             {"message": "Booking cancelled successfully."}, status=status.HTTP_200_OK
         )
-
-
-# TODO: add price for ticket based on the show, seat type, theater

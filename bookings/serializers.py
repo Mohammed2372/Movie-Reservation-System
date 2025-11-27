@@ -12,7 +12,7 @@ class TicketSerializer(ModelSerializer):
 
     class Meta:
         model = Ticket
-        fields = ["id", "seat", "seat_str"]
+        fields = ["id", "seat", "seat_str", "price"]
 
     @extend_schema(serializers.CharField())
     def get_seat_str(self, obj):
