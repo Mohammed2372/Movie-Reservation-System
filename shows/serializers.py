@@ -2,11 +2,11 @@ from rest_framework.serializers import ModelSerializer
 
 
 from .models import Showtime
-from movies.serializers import MovieSerializer, ScreenSerializer
+from movies.serializers import MovieSerializer, ScreenReadSerializer
 
 class ShowtimeSerializer(ModelSerializer):
     movie = MovieSerializer(read_only=True)
-    screen = ScreenSerializer(read_only=True)
+    screen = ScreenReadSerializer(read_only=True)
     
     class Meta:
         model = Showtime

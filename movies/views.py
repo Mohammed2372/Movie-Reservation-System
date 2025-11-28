@@ -4,8 +4,13 @@ from rest_framework import viewsets, filters
 from django_filters.rest_framework import DjangoFilterBackend
 
 
-from .models import Movie, Theater
-from .serializers import MovieSerializer, TheaterSerializer
+from .models import Movie, Theater, Screen
+from .serializers import (
+    MovieSerializer,
+    TheaterSerializer,
+    ScreenReadSerializer,
+    ScreenWriteSerializer,
+)
 from .permissions import IsAdminOrReadOnly
 
 
@@ -38,3 +43,13 @@ class TheaterViewSet(viewsets.ModelViewSet):
     filterset_fields = ["city"]
     search_fields = ["name", "address"]
     ordering_fields = ["name", "city"]
+
+
+class ScreenViewSet(viewsets.ModelViewSet):
+    queryset = Screen.objects.all()
+    permission_classes = [IsAdminOrReadOnly]
+
+    def get_serializer_class(self) -> ScreenReadSerializer | ScreenWriteSerializer:
+        if self.action in ["list", "retrieve"]:
+            return ScreenReadSerializer
+        return ScreenWriteSerializer

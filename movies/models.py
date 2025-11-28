@@ -50,7 +50,7 @@ class Screen(models.Model):
         Theater, on_delete=models.CASCADE, related_name="screens"
     )
     capacity = models.PositiveIntegerField(help_text="Total number of seats")
-    screen_type = models.CharField(max_length=10, choices=SCREEN_TYPE_CHOICES)
+    screen_type = models.CharField(max_length=10, choices=SCREEN_TYPE_CHOICES, default="2D")
 
     def __str__(self):
         return f"{self.name} at {self.theater}"

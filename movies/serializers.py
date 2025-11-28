@@ -25,7 +25,17 @@ class TheaterSerializer(ModelSerializer):
         fields = ["id", "name", "city"]
 
 
-class ScreenSerializer(ModelSerializer):
+class ScreenWriteSerializer(ModelSerializer):
+    theater_id = serializers.PrimaryKeyRelatedField(
+        queryset=Theater.objects.all(), required=True, source="theater"
+    )
+
+    class Meta:
+        model = Screen
+        fields = ["id", "name", "capacity", "screen_type", "theater_id"]
+
+
+class ScreenReadSerializer(ModelSerializer):
     theater = TheaterSerializer(read_only=True)
 
     class Meta:
