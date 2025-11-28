@@ -1,5 +1,6 @@
+from django.db.models.manager import BaseManager
 from django.utils import timezone
-from rest_framework import viewsets
+from rest_framework import viewsets, filters
 from django_filters.rest_framework import DjangoFilterBackend
 
 
@@ -13,12 +14,16 @@ class MovieViewSet(viewsets.ModelViewSet):
     serializer_class = MovieSerializer
     permission_classes = [IsAdminOrReadOnly]
     # filters
-    filter_backends = [DjangoFilterBackend]
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter]
     filterset_fields = ["release_date", "genre", "is_active"]
     search_fields = ["title", "description"]
     ordering_fields = ["release_date", "duration"]
 
-    def get_queryset(self):
-        # We reuse your logic: Only show movies with future showtimes
+    def get_queryset(self) -> BaseManager[Movie]:
+        # if admin, show all movies
+        if self.request.user.is_staff:
+            return Movie.objects.all()
+
+        # if customer, show only the with future showtime
         now = timezone.now()
         return Movie.objects.filter(showtime__start_time__gt=now).distinct()
