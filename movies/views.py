@@ -4,8 +4,8 @@ from rest_framework import viewsets, filters
 from django_filters.rest_framework import DjangoFilterBackend
 
 
-from .models import Movie
-from .serializers import MovieSerializer
+from .models import Movie, Theater
+from .serializers import MovieSerializer, TheaterSerializer
 from .permissions import IsAdminOrReadOnly
 
 
@@ -27,3 +27,14 @@ class MovieViewSet(viewsets.ModelViewSet):
         # if customer, show only the with future showtime
         now = timezone.now()
         return Movie.objects.filter(showtime__start_time__gt=now).distinct()
+
+
+class TheaterViewSet(viewsets.ModelViewSet):
+    queryset = Theater.objects.all()
+    serializer_class = TheaterSerializer
+    permission_classes = [IsAdminOrReadOnly]
+    # filters
+    filter_backends = [DjangoFilterBackend, filters.SearchFilter]
+    filterset_fields = ["city"]
+    search_fields = ["name", "address"]
+    ordering_fields = ["name", "city"]
