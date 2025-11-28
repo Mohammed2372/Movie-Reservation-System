@@ -3,7 +3,8 @@ from rest_framework.response import Response
 from rest_framework import serializers
 from django.utils import timezone
 from drf_spectacular.utils import extend_schema, inline_serializer
-from django_filters.rest_framework import DjangoFilterBackend, filters
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import filters
 
 
 from .models import Showtime
@@ -12,12 +13,12 @@ from bookings.models import Ticket
 
 
 # Create your views here.
-class ShowtimeViewSet(viewsets.ModelViewSet):
+class ShowtimeViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Showtime.objects.filter(start_time__gt=timezone.now())
     serializer_class = ShowtimeSerializer
     filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
-    filterset_fields = ["movie", "fields"]
-    ordering_fields = ["start_time"]
+    filterset_fields = ["movie", "screen"]
+    ordering_fields = ["start_time", "price_multiplier"]
 
 
 class SeatMapView(views.APIView):
