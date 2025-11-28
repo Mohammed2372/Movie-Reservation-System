@@ -11,3 +11,9 @@ class ShowtimeSerializer(ModelSerializer):
     class Meta:
         model = Showtime
         fields = ['id', 'movie', 'screen', 'start_time', 'end_time']
+        
+        
+class CreateShowtimeSerializer(ModelSerializer):
+    class Meta:
+        model = Showtime
+        fields = ['movie', 'screen', 'start_time']

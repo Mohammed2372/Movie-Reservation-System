@@ -1,3 +1,4 @@
+from django.db.models.manager import BaseManager
 from rest_framework import viewsets, views, status
 from rest_framework.response import Response
 from rest_framework import serializers
@@ -8,17 +9,27 @@ from rest_framework import filters
 
 
 from .models import Showtime
-from .serializers import ShowtimeSerializer
+from .serializers import ShowtimeSerializer, CreateShowtimeSerializer
 from bookings.models import Ticket
+from movies.permissions import IsAdminOrReadOnly
 
 
 # Create your views here.
-class ShowtimeViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Showtime.objects.filter(start_time__gt=timezone.now())
-    serializer_class = ShowtimeSerializer
+class ShowtimeViewSet(viewsets.ModelViewSet):
     filter_backends = [DjangoFilterBackend, filters.OrderingFilter]
     filterset_fields = ["movie", "screen"]
     ordering_fields = ["start_time", "price_multiplier"]
+    permission_classes = [IsAdminOrReadOnly]
+
+    def get_serializer_class(self) -> CreateShowtimeSerializer | ShowtimeSerializer:
+        if self.action == "create":
+            return CreateShowtimeSerializer
+        return ShowtimeSerializer
+
+    def get_queryset(self) -> BaseManager[Showtime]:
+        if self.request.user.is_superuser:
+            return Showtime.objects.all()
+        return Showtime.objects.filter(start_time__gt=timezone.now())
 
 
 class SeatMapView(views.APIView):

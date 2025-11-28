@@ -3,7 +3,7 @@ from rest_framework.routers import DefaultRouter
 from .views import ShowtimeViewSet, SeatMapView
 
 router = DefaultRouter()
-router.register(r"showtimes", ShowtimeViewSet)
+router.register(r"showtimes", ShowtimeViewSet, basename="showtimes")
 
 urlpatterns = [
     path("", include(router.urls)),
