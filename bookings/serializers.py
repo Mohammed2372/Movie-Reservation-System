@@ -41,5 +41,3 @@ class CreateBookingSerializer(serializers.Serializer):
         child=SeatSelectorSerializer(),
         help_text="List of seats with row('A', 'B', etc) and number(1, 2, etc)",
     )
-    status = serializers.CharField()
-    created_at = serializers.DateTimeField(read_only=True)

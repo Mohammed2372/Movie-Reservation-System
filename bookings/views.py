@@ -18,7 +18,7 @@ def calculate_dynamic_price(showtime, seats):
     if showtime.start_time.hour < 12:
         discount = final_price * Decimal("0.20")
         final_price -= discount
-    if seats.seat__type == "VIP":
+    if seats.seat_type == "VIP":
         final_price += Decimal("10.00")
     if seats.seat_type == "Premium":
         final_price += Decimal("5.00")
@@ -34,7 +34,7 @@ class BookingViewSet(viewsets.ModelViewSet):
         return BookingSerializer
 
     def get_queryset(self):
-        return Booking.objects.filter(user=self.request.user).order_by("-created_at")
+        return Booking.objects.filter(id=self.request.user.id).order_by("-created_at")
 
     def create(self, request, *args, **kwargs):
         serializer = CreateBookingSerializer(data=request.data)
@@ -76,7 +76,7 @@ class BookingViewSet(viewsets.ModelViewSet):
                             raise Exception(f"Seat {row}{number} is already booked!")
 
                         ticket_price = calculate_dynamic_price(
-                            seat=seat, showtime=showtime
+                            seats=seat, showtime=showtime
                         )
 
                         Ticket.objects.create(

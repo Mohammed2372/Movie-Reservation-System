@@ -8,7 +8,7 @@ from .serializers import MovieSerializer
 from .permissions import IsAdminOrReadOnly
 
 
-class MovieViewSet(viewsets.ReadOnlyModelViewSet):
+class MovieViewSet(viewsets.ModelViewSet):
     queryset = Movie.objects.all()
     serializer_class = MovieSerializer
     permission_classes = [IsAdminOrReadOnly]
