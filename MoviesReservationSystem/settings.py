@@ -28,6 +28,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv("SECRET_KEY")
 STRIPE_PUBLIC_KEY = os.getenv("STRIPE_PUBLIC_KEY")
 STRIPE_SECRET_KEY = os.getenv("STRIPE_SECRET_KEY")
+STRIPE_WEBHOOK_KEY = os.getenv("STRIPE_WEBHOOK_SECRET")
+EMAIL_BACKEND = os.getenv("EMAIL_BACKEND")
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True

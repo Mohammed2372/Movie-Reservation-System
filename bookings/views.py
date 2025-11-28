@@ -1,6 +1,8 @@
 from django.shortcuts import get_object_or_404
 from django.db import transaction
 from django.conf import settings
+from django.views.decorators.csrf import csrf_exempt
+from django.http import HttpResponse
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
@@ -8,10 +10,13 @@ from rest_framework.decorators import action
 from decimal import Decimal
 import stripe
 
+
 from movies.models import Seat
 from shows.models import Showtime
 from .models import Booking, Ticket
 from .serializers import BookingSerializer, CreateBookingSerializer
+from .utils import send_ticket_email
+
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
@@ -136,3 +141,38 @@ class BookingViewSet(viewsets.ModelViewSet):
         return Response(
             {"message": "Booking cancelled successfully."}, status=status.HTTP_200_OK
         )
+
+
+@csrf_exempt
+def stripe_webhook(request):
+    payload = request.body
+    sig_header = request.META.get("HTTP_STRIPE_SIGNATURE")
+    event = None
+
+    try:
+        event = stripe.Webhook.construct_event(
+            payload=payload,
+            sig_header=sig_header,
+            secret=settings.STRIPE_WEBHOOK_SECRET,
+        )
+    except ValueError as e:
+        return HttpResponse(status=400)
+    except stripe.error.SignatureVerificationError as e:
+        return HttpResponse(status=400)
+
+    # handle the event
+    if event["type"] == "payment_intent.succeeded":
+        intent = event["data"]["object"]  # the payment intent data
+
+        booking_id = intent["metadata"].get("booking_id")
+
+        if booking_id:
+            try:
+                booking = Booking.objects.get(id=booking_id)
+                booking.status = "Confirmed"
+                booking.save()
+                print(f"✅ Booking {booking.id} Confirmed via Webhook!")
+                send_ticket_email(booking=booking)
+            except Booking.DoesNotExist:
+                print(f"❌ Booking {booking_id} not found!")
+    return HttpResponse(status=200)
