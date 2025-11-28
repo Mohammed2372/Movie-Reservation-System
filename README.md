@@ -1,94 +1,114 @@
 # 🎬 Cinema Reservation System API
 
-A comprehensive, production-grade REST API designed to handle the full lifecycle of movie theater bookings. This system manages complex relationships between movies, screens, and showtimes while ensuring data integrity during high-concurrency booking scenarios.
+A production-grade, RESTful API for a movie theater booking system. This project manages the full lifecycle of a cinema ecosystem—from scheduling movies and managing screens to handling high-concurrency ticket bookings and processing secure payments.
+
+project idea: [movie-reservation-system](https://roadmap.sh/projects/movie-reservation-system)
+
+## Built with **Django Rest Framework (DRF)**, featuring secure JWT authentication, atomic database transactions, and third-party integrations (Stripe).
 
 ## 🚀 Key Features
 
-- **Robust Booking Engine:**
+### 🔐 Security & Authentication
 
-  - **Concurrency Control:** Uses atomic database transactions to prevent double-booking (race conditions) for the same seat.
-  - **Dynamic Pricing:** Automatically calculates ticket prices based on VIP seat status and time-of-day discounts (e.g., Morning shows).
-  - **Smart Validation:** Ensures showtimes do not overlap on the same screen.
+- **JWT via HttpOnly Cookies:** Authentication uses JSON Web Tokens stored in HttpOnly cookies. This prevents XSS attacks (as JavaScript cannot read the token) while maintaining stateless authentication.
+- **Role-Based Access Control (RBAC):** Custom permissions ensure only Admins can modify the catalog (Movies, Screens), while customers have read-only access to schedules.
 
-- **Advanced Authentication & Security:**
+### 🎟️ Booking Engine (The Core Logic)
 
-  - **JWT Implementation:** Custom authentication system using JSON Web Tokens.
-  - **HttpOnly Cookies:** Tokens are stored in secure, HttpOnly cookies to prevent XSS attacks (no local storage).
-  - **Role-Based Access:** Strict permissions ensuring only Admins can manage movies/screens, while Customers have read-only access to catalog.
+- **Concurrency Handling:** Utilizes `transaction.atomic()` to ensure that if two users try to book the same seat at the exact same millisecond, only one succeeds. This prevents "Race Conditions."
+- **Smart Scheduling:** Validation logic prevents scheduling overlapping movies on the same screen.
+- **Dynamic Pricing:** automatically calculates ticket prices based on business rules:
+  - _Time-of-Day:_ 20% discount for morning shows.
+  - _Seat Tier:_ Surcharges for VIP and Premium seats.
 
-- **Payment & Notifications:**
+### 💳 Payments & Notifications
 
-  - **Stripe Integration:** Full payment lifecycle using Payment Intents.
-  - **Webhooks:** Asynchronous webhook listener to automatically confirm bookings upon successful payment.
-  - **Automated Emails:** Generates and sends detailed ticket receipts immediately after confirmation.
+- **Stripe Integration:** Full implementation of Stripe **Payment Intents** API.
+- **Asynchronous Webhooks:** A secure webhook listener waits for Stripe's "Payment Succeeded" signal to confirm bookings in real-time, regardless of frontend connectivity.
+- **Automated Emails:** Generates and sends a detailed ticket receipt email immediately upon payment confirmation.
 
-- **Architecture:**
-  - **RESTful Design:** Built with Django Rest Framework (DRF) using ViewSets and Routers.
-  - **Documentation:** Fully automated, interactive API documentation via Swagger UI.
-  - **Test Suite:** Comprehensive unit and integration tests covering happy paths, edge cases, and security breaches.
+### 📚 Documentation & Testing
+
+- **Automated Documentation:** Fully interactive API documentation via **Swagger UI** (drf-spectacular).
+- **Comprehensive Testing:** A robust test suite covering:
+  - Happy Paths (Booking flow).
+  - Edge Cases (Double booking, non-existent seats).
+  - Security (Unauthorized access attempts).
+
+---
 
 ## 🛠️ Tech Stack
 
-- **Backend:** Python 3.10+, Django 5, Django Rest Framework
-- **Database:** SQLite
-- **Authentication:** SimpleJWT with Custom Cookie Middleware
-- **Payments:** Stripe API
-- **Documentation:** drf-spectacular (OpenAPI 3.0)
+| Category              | Technology                               |
+| :-------------------- | :--------------------------------------- |
+| **Backend Framework** | Python 3.11+, Django 5                   |
+| **API Framework**     | Django Rest Framework (DRF)              |
+| **Database**          | SQLite (Dev) / PostgreSQL                |
+| **Authentication**    | SimpleJWT (Custom Cookie Implementation) |
+| **Payment Gateway**   | Stripe API                               |
+| **Documentation**     | drf-spectacular (OpenAPI 3.0)            |
+| **DevOps**            | Docker, Docker Compose                   |
 
-## ⚙️ Installation & Setup
+---
 
-1.  **Clone the repository**
+## ⚙️ Setup & Installation
 
-    ```bash
-    git clone https://github.com/Mohammed2372/Movie-Reservation-System.git
-    cd Movie-Reservation-System
-    ```
+Follow these steps to run the API locally.
 
-2.  **Create Virtual Environment & Install Dependencies**
+### 1. Clone and Install
 
-    ```bash
-    python -m venv env
-    # Windows:
-    env\Scripts\activate
-    # Mac/Linux:
-    source env/bin/activate
+```bash
+git clone https://github.com/Mohammed2372/Movie-Reservation-System.git
+cd Movie-Reservation-System
 
-    pip install -r requirements.txt
-    ```
+# Create Virtual Environment
+python -m venv env
 
-3.  **Environment Variables**
-    Create a `settings.py` or `.env` configuration with your Stripe keys:
+# Activate (Windows)
+env\Scripts\activate
+# Activate (Mac/Linux)
+source env/bin/activate
 
-    - `STRIPE_PUBLIC_KEY=pk_test_...`
-    - `STRIPE_SECRET_KEY=sk_test_...`
-    - `STRIPE_WEBHOOK_SECRET=whsec_...`
+# Install Dependencies
+pip install -r requirements.txt
+```
 
-4.  **Database Setup**
+### 2. **Environment Variables**
 
-    ```bash
-    python manage.py makemigrations
-    python manage.py migrate
-    ```
+Create a `settings.py` or `.env` configuration with your Stripe keys:
 
-5.  **Create Admin User**
+- `STRIPE_PUBLIC_KEY=pk_test_...`
+- `STRIPE_SECRET_KEY=sk_test_...`
+- `STRIPE_WEBHOOK_SECRET=whsec_...`
 
-    ```bash
-    python manage.py createsuperuser
-    ```
+### 3. **Database Setup**
 
-6.  **Populate Initial Data**
-    The system includes a management command to auto-generate seat grids for screens.
+```bash
+python manage.py makemigrations
+python manage.py migrate
+```
 
-    - First, create a Theater and Screen via Django Admin or API.
-    - Then run:
-      ```bash
-      python manage.py generate_seats "Screen Name"
-      ```
+### 4. **Create Admin User**
 
-7.  **Run the Server**
-    ```bash
-    python manage.py runserver
-    ```
+```bash
+python manage.py createsuperuser
+```
+
+### 5. **Populate Initial Data**
+
+The system includes a management command to auto-generate seat grids for screens.
+
+- First, create a Theater and Screen via Django Admin or API.
+- Then run:
+  ```bash
+  python manage.py generate_seats "Screen Name"
+  ```
+
+### 6. **Run the Server**
+
+```bash
+python manage.py runserver
+```
 
 ## 📖 API Documentation
 
