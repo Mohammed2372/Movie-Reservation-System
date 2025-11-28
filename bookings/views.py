@@ -14,7 +14,11 @@ import stripe
 from movies.models import Seat
 from shows.models import Showtime
 from .models import Booking, Ticket
-from .serializers import BookingSerializer, CreateBookingSerializer
+from .serializers import (
+    BookingSerializer,
+    CreateBookingSerializer,
+    BookingListSerializer,
+)
 from .utils import send_ticket_email
 
 
@@ -34,11 +38,16 @@ def calculate_dynamic_price(showtime, seats):
 
 
 class BookingViewSet(viewsets.ModelViewSet):
-    Permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
-    def get_serializer_class(self) -> CreateBookingSerializer | BookingSerializer:
+    def get_serializer_class(
+        self,
+    ) -> CreateBookingSerializer | BookingSerializer | BookingListSerializer:
         if self.action == "create":
             return CreateBookingSerializer
+        # control what to show in booking list
+        if self.action == "list":
+            return BookingListSerializer
         return BookingSerializer
 
     def get_queryset(self):
@@ -110,7 +119,7 @@ class BookingViewSet(viewsets.ModelViewSet):
                     booking.save()
 
                     # prepare data to send
-                    booking_data = BookingSerializer(booking).data
+                    booking_data = BookingListSerializer(booking).data
                     booking_data["total_amount"] = total_amount
                     booking_data["client_secret"] = intent["client_secret"]
 
