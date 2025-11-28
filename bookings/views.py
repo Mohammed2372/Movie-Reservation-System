@@ -42,7 +42,7 @@ class BookingViewSet(viewsets.ModelViewSet):
         return BookingSerializer
 
     def get_queryset(self):
-        return Booking.objects.filter(id=self.request.user.id).order_by("-created_at")
+        return Booking.objects.filter(user=self.request.user).order_by("-created_at")
 
     def create(self, request, *args, **kwargs):
         serializer = CreateBookingSerializer(data=request.data)
