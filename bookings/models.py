@@ -18,6 +18,7 @@ class Booking(models.Model):
     showtime = models.ForeignKey(Showtime, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="Pending")
+    stripe_payment_intent = models.CharField(max_length=255, blank=True, null=True)
 
     def __str__(self):
         return f"{self.user.username} - {self.showtime.movie.title} ({self.status})"
