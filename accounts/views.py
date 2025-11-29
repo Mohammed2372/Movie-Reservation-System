@@ -11,11 +11,6 @@ from drf_spectacular.utils import extend_schema
 
 from .serializers import RegisterSerializer, UserDetailSerializer, LoginSerializer
 
-
-# Create your views here.
-# TODO: control what to appear in the returning json in booking (as it contains everything) and all of them
-
-
 # Helper Function
 def get_token_for_user(user):
     refresh = RefreshToken.for_user(user)
