@@ -1,0 +1,28 @@
+version: '3.8'
+
+services:
+  # 1. The Database Service
+  db:
+    image: postgres:15-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    # Load variables from the .env file
+    env_file:
+      - .env
+
+  # 2. The Web API Service
+  web:
+    build: .
+    command: python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+    # Load the same variables so Django can connect
+    env_file:
+      - .env
+
+volumes:
+  postgres_data:

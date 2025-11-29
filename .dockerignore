@@ -1,0 +1,27 @@
+# Python cache files
+pycache/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual Environments (Do not copy these!)
+env/
+venv/
+.venv/
+
+# Local Environment Variables
+# We exclude this so secrets aren't baked into the image layer
+.env
+
+# Local Database (We use Postgres in Docker)
+db.sqlite3
+
+# Git files
+.git/
+.gitignore
+
+# Static files (These are generated at runtime/collectstatic)
+staticfiles/
+
+# Testing cache
+.pytest_cache/
